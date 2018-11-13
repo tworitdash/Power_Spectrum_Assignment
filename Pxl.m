@@ -1,11 +1,11 @@
-function per_x = Px(x, win, n1, n2)
-%
+function per_x = Pxl(x, win, n1, n2)
+    
     x = x(:);
     if nargin == 2
         n1 = 1; n2 = length(x); 
-        display(n1, n2);
+        %display(n1, n2);
     end;
-    N = n2 - n1 + 1
+    N = n2 - n1 + 1;
     w = ones(N, 1);
     if (win == 1) w = bartlett(N);
     elseif (win == 2) w = hamming(N);
