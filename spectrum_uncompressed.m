@@ -16,9 +16,9 @@ X_per = periodo(x_sig_with_noise_updated, N);
 fs = 2*pi; %sampling of 2*pi becuase signal is complex valued
     
 freq_0 = 0:fs/length(x_sig_with_noise_updated):fs - fs/N;
-figure()
+figure(1)
 
-%plot(freq_0/pi, X_per)
+%plot(freq_0/pi, 10*log(X_per));
 hold on
 grid on
 title('Periodogram Using FFT')
@@ -27,28 +27,32 @@ ylabel('Power/Frequency')
 
 %Bartlett's method
 
-X_per_bartlett = Pxl(x_sig_with_noise_updated, 1)/N;
+X_per_bartlett = Pxl(x_sig_with_noise_updated, 1);
+%X_per_bartlett = periodogram(x_sig_with_noise_updated,[],N);
+
 freq_1 = 0:fs/length(X_per_bartlett):fs;
 freq_1_updated = freq_1(1:length(freq_1)-1);
-plot(freq_1_updated/pi, X_per_bartlett)
-hold on
+
+plot(freq_1_updated/pi, 10*log(X_per_bartlett));
+
 grid on
 title('Periodogram Using Bartlett Avg')
 xlabel('Normalized Frequency (\times\pi rad/sample)')
-ylabel('Power/Frequency')
-
-%Hamming's method
+ylabel('Power/Frequency Bartlett')
 
 X_per_hamming = Pxl(x_sig_with_noise_updated, 2);
+%X_per_bartlett = periodogram(x_sig_with_noise_updated,[],N);
+
 freq_1 = 0:fs/length(X_per_hamming):fs;
 freq_1_updated = freq_1(1:length(freq_1)-1);
-%plot(freq_1_updated/pi, X_per_hamming)
-hold on
-%grid on
-%title('Periodogram Using Hamming Avg')
-%xlabel('Normalized Frequency (\times\pi rad/sample)')
-%ylabel('Power/Frequency')
 
+figure(2)
+
+plot(freq_1_updated/pi, 10*log(X_per_hamming));
+grid on
+title('Periodogram Using Hamming Avg')
+xlabel('Normalized Frequency (\times\pi rad/sample)')
+ylabel('Power/Frequency Hamming')
 
 
 
