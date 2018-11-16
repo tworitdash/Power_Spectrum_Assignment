@@ -1,10 +1,7 @@
 
 %Computation of Phi (The matrix of N_block and M_ruler) to compress the
 %exisiting data.
-%load('lowpasssignal.mat');
-%load('multibandsignal.mat');
-%load('highpasssignal.mat');
-load('bandpasssignal.mat');
+load('lowpasssignal.mat');
 mn = dsp.Mean;
 y_sig_new = y_sig;
 y_sig_mean = mn(y_sig_new);
@@ -77,10 +74,10 @@ Px_cap = fft(Rx_cap);
 
 freq_px = 0:fs/length(Px_cap):fs;
 freq_px_updated = freq_px(1:length(freq_px)-1);
-hold on
-plot(freq_px_updated/pi, abs(Px_cap), 'LineWidth',2);
+figure(1)
+plot(freq_px_updated/pi, abs(Px_cap));
 grid on
-title('Power Spec Est of X -  Band Pass Signal')
+title('Power Spec Est of X')
 xlabel('Normalized Frequency (\times\pi rad/sample)')
 ylabel('Power')
 
@@ -93,7 +90,7 @@ ylabel('Power')
 ang_freq = 0:fs/length(Rx_cap):fs;
 ang_freq = ang_freq(1:length(ang_freq)-1);
 
-
+err = zeros(N_block - 1, 1);
 % Yule_Walker equations to solve for A and B matrix:
  
 Rx_Y = Rx_cap_row(2:end, 2:end);
@@ -110,21 +107,20 @@ for l = 1:P
     
     rx_l = rx_Y(1:l);
     
-    a_m = -Rx_l\rx_l; % A matrix with l co-efficients
-    
+    a_m = -Rx_l\rx_l; % a matrix with l co-efficients
     epsilon = Rx_l(1,1);
     denominator = 0;
     
     for m = 1:l
-       epsilon = epsilon + a_m(m) * conj(rx_l(m)); 
+       epsilon = epsilon + a_m(m) * conj(rx_Y()); 
        denominator = denominator + a_m(m) * exp(-1i * m* ang_freq);
     end
     b_0 = sqrt(epsilon);
     
-    err(l) = length(y_sig) * log10(epsilon) + 2 * l; % To find out the best parametric solution
+    err(p) = length(y_sig) * log10(epsilon) + 2 * l; % To find out the best parametric solution
     Px_l = epsilon ./ (1+ denominator); % Power spectrum complex
      
-    %plot(ang_freq/pi, abs(Px_l))
+    plot(ang_freq/pi, abs(Px_l))
      
 end
 
@@ -138,58 +134,18 @@ rx_l = rx_Y(1:l);
     
 a_m = -Rx_l\rx_l; % a matrix with l co-efficients
 
-epsilon = Rx_l(1,1);
-
-denominator = 0;
-
-for m = 1:l
-       epsilon = epsilon + a_m(m) * conj(rx_l(m)); 
-       denominator = denominator + a_m(m) * exp(-1i * m* ang_freq);
+ep = RxP(1,1);
+sum = 0;
+for k=1:p
+   ep = ep + ap(k) * conj(rxP(k)); 
+   sum = sum + ap(k) * exp(-1i*k*omega);
 end
-b_0 = sqrt(epsilon);
-    
-Px_l = epsilon ./ abs(1+ denominator); % Power spectrum complex
+b0 = sqrt(ep);
+Par = ep./abs(1+sum);
+%figure()
+plot(omega, abs(Par))
+%hold on
 
 
-hold on
-plot(ang_freq/pi, abs(Px_l), 'LineWidth',2)
 
-
-grid on
-%title('PSD | AR model')
-xlabel('Normalized Frequency (\times\pi rad/sample)')
-ylabel('Power Spectrum | AR process')
-
-% The minimum of variable err gives the best estimate with AR processe, the
-% suitable number of parameters in the AR process.
-
-[v, index] = min(err);
-l = index; % optimal index
-
-Rx_l = Rx_Y(1:l, 1:l);
-    
-rx_l = rx_Y(1:l);
-    
-a_m = -Rx_l\rx_l; % a matrix with l co-efficients
-
-epsilon = Rx_l(1,1);
-
-denominator = 0;
-
-for m = 1:l
-       epsilon = epsilon + a_m(m) * conj(rx_l(m)); 
-       denominator = denominator + a_m(m) * exp(-1i * m* ang_freq);
-end
-b_0 = sqrt(epsilon);
-    
-Px_l = epsilon ./ abs(1+ denominator); % Power spectrum complex
-hold on
-plot(ang_freq/pi, abs(Px_l), 'LineWidth',2)
-
-grid on
-%title('PSD | AR model')
-xlabel('Normalized Frequency (\times\pi rad/sample)')
-ylabel('Power Spectrum | AR Process')
-
-legend('Using DFT of Estimated Rx', 'AR Process with l = 12', 'AR with l = 52')
 

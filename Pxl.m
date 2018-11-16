@@ -1,18 +1,12 @@
-function per_x = Pxl(x, win, n1, n2)
-    load('lowpasssignal.mat')
-    x = x(:);
-    if nargin == 2
-        n1 = 1; n2 = length(x); 
-    end;
-    per_x = 0;
-    N = n2 - n1 + 1;
-    L = floor(N / N_block);
-    for i = 1:N_block-1
-        w = ones(L, 1);
-        if (win == 1) w = bartlett(L);
-        elseif (win == 2) w = hamming(L);
-        end;
-        xw = x(n1:n1 + L-1).*w/norm(w);
-        per_x = per_x + periodogram(xw);
-        n1 = n1 + L;
+function per_x = Pxl(x, N_block)
+
+    X = zeros(length(N_block) ,1);
+    for i = 1:fix(length(x)/N_block)-1
+        
+       x_i = x(i*N_block+1 : (i+1)*N_block);
+       X_i = fft(x_i);
+       X_i = abs(X_i) .^ 2;
+       X = X + X_i;
     end
+    per_x = X/length(x);
+end

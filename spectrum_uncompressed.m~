@@ -2,15 +2,15 @@
 %load('lowpasssignal.mat');
 %load('multibandsignal.mat');
 %load('highpasssignal.mat');
-load('bandpasssignal.mat');
+%load('bandpasssignal.mat');
 
 %check for mean
 mn = dsp.Mean;
-x_sig_with_noise_mean = mn(x_sig_and_noise);
+x_sig_with_noise_mean = mn(x_sig);
 
 %new signal definition with mean
 
-x_sig_with_noise_updated = x_sig_and_noise - x_sig_with_noise_mean;
+x_sig_with_noise_updated = x_sig - x_sig_with_noise_mean;
 
 %Periodogram on x to compute PSD
 N = length(x_sig_with_noise_updated);
@@ -25,7 +25,7 @@ figure(1)
 plot(freq_0/pi, abs(X_per));
 hold on
 grid on
-title('PSD with Periodogram using FFT and Bartlett Band Pass')
+title('PSD with Periodogram using FFT and Bartlett (Multi_band_pass)')
 xlabel('Normalized Frequency (\times\pi rad/sample)')
 ylabel('Power/Frequency')
 

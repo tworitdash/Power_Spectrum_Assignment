@@ -1,6 +1,6 @@
 function perx = periodo(x, N)
   
         x_fft = fft(x);
-        perx = (1/(2 * pi * N)) * abs(x_fft) .^ 2;
+        perx = (1/ N) * (x_fft) .* conj(x_fft);
     
 end
